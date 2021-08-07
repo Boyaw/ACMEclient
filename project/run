@@ -1,0 +1,56 @@
+#!/bin/bash
+
+DIRECTORY=$(dirname "$0")
+echo "Changing to ${DIRECTORY}"
+cd  "$DIRECTORY" || exit 1
+
+echo "Run your project here."
+
+[ -f dnsrec.txt ] &&  rm -f dnsrec.txt 
+[ -f keyAuth.txt ] &&  rm -f keyAuth.txt
+[ -f certificate.pem ] && rm -f certificate.pem
+[ -f privatekey.pem ] && rm -f privatekey.pem
+touch dnsrec.txt | touch keyAuth.txt | touch privatekey.pem | touch certificate.pem
+
+echo "dnsrec.txt, keyAuth.txt, privatekey.pem, certificate.pem created!"
+
+# Boya 27.09.2020
+# In order to get rid of ./ I have added current path to ~/.profile
+# run dns01 --dir https://localhost:14000/dir --record 127.0.0.1 --domain netsec.ethz.ch
+challenge_mode=""
+ACME_dir=""
+dns_record=""
+domain=""
+revoke="no-revoke"
+
+
+while [ "$1" != "" ]; do
+    case $1 in
+        http01 )                challenge_mode=$1
+                                shift
+                                ;;        
+        dns01 )                 challenge_mode=$1
+                                shift
+                                ;;
+        --revoke )              revoke="revoke"
+                                shift
+                                ;;
+        --dir )                 shift
+                                ACME_dir=$1
+                                shift
+                                ;;
+        --record )              shift
+                                dns_record=$1
+                                shift
+                                ;;
+        --domain )              shift
+                                domain="$domain+$1"
+                                shift
+                                ;;
+        * )                     shift
+    esac
+done
+
+echo "Here is the command I have"
+echo "python3 ACMEclient.py $challenge_mode $ACME_dir $dns_record $domain $revoke"
+python3 ACMEclient.py $challenge_mode $ACME_dir $dns_record $domain $revoke

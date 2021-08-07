@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Compile your project here"
+
+pip install requests
+
+
+pip install cryptography
+pip install dnslib
+
+echo "requests installed successfully"
